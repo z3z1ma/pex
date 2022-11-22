@@ -269,11 +269,13 @@ def safe_mkdir(directory, clean=False):
     if clean:
         safe_rmtree(directory)
     try:
+        original_umask = os.umask(0)
         os.makedirs(directory)
     except OSError as e:
         if e.errno != errno.EEXIST:
             raise
     finally:
+        os.umask(original_umask)
         return directory
 
 
