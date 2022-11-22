@@ -99,7 +99,7 @@ def safe_copy(source, dest, overwrite=False):
     def do_copy():
         # type: () -> None
         temp_dest = dest + uuid4().hex
-        shutil.copy(source, temp_dest)
+        shutil.copyfile(source, temp_dest)
         os.rename(temp_dest, dest)
 
     # If the platform supports hard-linking, use that and fall back to copying.
@@ -269,13 +269,11 @@ def safe_mkdir(directory, clean=False):
     if clean:
         safe_rmtree(directory)
     try:
-        original_umask = os.umask(0)
         os.makedirs(directory)
     except OSError as e:
         if e.errno != errno.EEXIST:
             raise
     finally:
-        os.umask(original_umask)
         return directory
 
 
@@ -506,7 +504,7 @@ class Chroot(object):
         dst = self._normalize(dst)
         self._tag(dst, label)
         self._ensure_parent(dst)
-        shutil.copy(src, os.path.join(self.chroot, dst))
+        shutil.copyfile(src, os.path.join(self.chroot, dst))
 
     def link(self, src, dst, label=None):
         """Hard link file from ``src`` to ``chroot/dst`` with optional label.
